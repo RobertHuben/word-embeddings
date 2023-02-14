@@ -4,11 +4,16 @@ import json
 import matplotlib.pyplot as plt
 
 
-def load_data(file_name, labels_location="vocab.json", file_prefix="frequency_data/"):
+def load_data(file_name, file_prefix="frequency_data/", token_names_location="vocab.json"):
+    # reads a csv into a dataframe with columns "index", "frequency", and "token"
+    # parameters:
+    #   - file_name: the name of the file to read
+    #   - file_prefix: (optional) a prefix to the file name
+    #   - token_names_location: (optional) The location of the token labels file. If None will not add the token names to the dataframe
     with open(f"{file_prefix}{file_name}", 'r') as frequency_file:
         df = pd.read_csv(frequency_file, names=['index', 'frequency'])
-        if labels_location:
-            with open(labels_location, 'r') as label_file:
+        if token_names_location:
+            with open(token_names_location, 'r') as label_file:
                 token_encoding = reverse_dict(json.load(label_file))
                 max_tokens = max(list(token_encoding))
                 df = df.loc[df['index'] < max_tokens+1]
@@ -18,7 +23,7 @@ def load_data(file_name, labels_location="vocab.json", file_prefix="frequency_da
 
 
 def weird_token_indices():
-    # from https://www.lesswrong.com/posts/aPeJE8bSo6rAFoLqg/solidgoldmagikarp-plus-prompt-generation
+    # the list of 133 weird tokens identified by the authors at https://www.lesswrong.com/posts/aPeJE8bSo6rAFoLqg/solidgoldmagikarp-plus-prompt-generation
     weird_tokens = [188, 189, 190, 191, 192, 193, 194, 195, 196, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 221, 3693, 5815, 9364, 12781, 17405, 17629, 17900, 18472, 20126, 21807, 23090, 23282, 23614, 23785, 24200, 24398, 24440, 24934, 25465, 25992, 28666, 29372, 30202, 30208, 30209, 30210, 30211, 30212, 30213, 30897, 30898, 30899, 30905, 30906, 31032, 31576, 31583, 31666, 31708, 31727, 31765, 31886, 31957, 32047, 32437,
                     32509, 33454, 34713, 35207, 35384, 35579, 36130, 36173, 36174, 36481, 36938, 36940, 37082, 37444, 37574, 37579, 37631, 37842, 37858, 38214, 38250, 38370, 39165, 39177, 39253, 39446, 39749, 39752, 39753, 39755, 39756, 39757, 39803, 39811, 39821, 40240, 40241, 40242, 41380, 41383, 41441, 41551, 42066, 42089, 42090, 42202, 42424, 42470, 42586, 42728, 43065, 43177, 43361, 43453, 44686, 45544, 45545, 46600, 47182, 47198, 47571, 48193, 49781, 50009]
     return weird_tokens
@@ -33,14 +38,17 @@ def reverse_dict(dict_to_reverse):
 
 
 def compute_number_of_zero_frequency(df):
+    # counts the number of entries in your df which has frequency 0
     return len(df[df['frequency']==0])
 
 def df_at_weird_tokens(df):
+    # returns your df but just at the indices corresponding to the "weird tokens"
     weird_tokens=weird_token_indices()
     indexes_as_vector=[idx in weird_tokens for idx in df['index']]
     return df[indexes_as_vector]
 
 def analyze_number_of_zero_tokens():
+    # calculates the number of zero frequency tokens on the full dataset, the weird tokens, the first 93 tokens, and the random dataset
     file_name = "frequencies_random_seed_1.csv"
     random_data_file_name="frequencies_of_random_vectors.csv"
     df = load_data(file_name)
@@ -53,6 +61,7 @@ def analyze_number_of_zero_tokens():
     print(f"In a random dataset of {len(df_random)} tokens, {compute_number_of_zero_frequency(df_random)} ({compute_number_of_zero_frequency(df_random)/len(df_random):.1%}) had zero frequency")
     
 def analyze_most_frequent_tokens(top_n=10):
+    # prints info about the top_n tokens by frequency
     file_name = "frequencies_random_seed_1.csv"
     df = load_data(file_name)
     df=df.sort_values(by="frequency", ascending=False)
@@ -62,6 +71,7 @@ def analyze_most_frequent_tokens(top_n=10):
     print(df_top_n)
 
 def plot_frequencies_descending(df, log_scale=False, fig_title="Frequency of Tokens", save_file_name=None):
+    # plots a graph of the frequency of tokens
     # plt.close()
     df=df.sort_values(by="frequency", ascending=False)
     df['x']=list(range(len(df)))
@@ -78,6 +88,7 @@ def plot_frequencies_descending(df, log_scale=False, fig_title="Frequency of Tok
         plt.savefig(save_file_name, bbox_inches='tight')
 
 def make_frequency_plots():
+    # makes a graph with 4 subplots showing the GPT-J/random token frequencies on a linear/log scale
     file_name = "frequencies_random_seed_1.csv"
     df = load_data(file_name)
     plt.subplots(2,2)
@@ -94,6 +105,7 @@ def make_frequency_plots():
     plot_frequencies_descending(random_df, log_scale=True, fig_title="", save_file_name='frequency_plots/four_quadrant_plot.png')
 
 def make_frequency_plots_showing_weird_tokens():
+    # makes a graph of the frequency of the GPT-J tokens with the "weird tokens" indicated
     file_name = "frequencies_random_seed_1.csv"
     df = load_data(file_name)
     plot_frequencies_descending(df, log_scale=False, fig_title="GPT-J Token Frequencies")
@@ -106,6 +118,7 @@ def make_frequency_plots_showing_weird_tokens():
     plt.savefig(save_file_name, bbox_inches='tight')
 
 def print_zero_frequency_indices():
+    # prints the indices of the tokens that have 0 frequency
     file_name = "frequencies_random_seed_1.csv"
     df = load_data(file_name)
     zero_frequency_df=df[df['frequency']==0]
