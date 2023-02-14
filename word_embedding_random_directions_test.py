@@ -40,16 +40,18 @@ def counts(arr):
 
 if __name__=="__main__":
     path='tf_model.h5'
+    np.random.seed(1)
     # weights downloaded from https://huggingface.co/EleutherAI/gpt-j-6B/tree/main
     with h5py.File(path, 'r') as f:
         key='/transformer/tfgptj_for_causal_lm/transformer/wte/weight:0'
         weights=f.get(key)[:]
+        # weights=np.random.normal(loc=0, scale=1, size=(50400, 4096)) #use this to make "random word embeddings"
         num_tokens=weights.shape[0]
         dimensions=weights.shape[1]
 
         # experimentation found that it's faster to generate samples in batches of ~600
         batch_size=600
-        batches=50000
+        batches=5000
 
         cumulative_frequencies={num:0 for num in range(50400)}
 
@@ -60,7 +62,7 @@ if __name__=="__main__":
             t_end=time.time()
             print(f"For batch {i} it took {t_end-t_start:.2f} seconds, or {(t_end-t_start)/batch_size:.2e} seconds per test")
 
-        outfile_location="frequencies.csv"
+        outfile_location="frequencies_random_seed_1.csv"
         with open(outfile_location, 'w') as f:
             out_string="\n".join([f"{key},{cumulative_frequencies[key]}" for key in sorted(list(cumulative_frequencies))])
             f.write(out_string)
