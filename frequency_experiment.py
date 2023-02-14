@@ -40,7 +40,8 @@ def counts(arr):
 
 if __name__=="__main__":
     path='tf_model.h5'
-    np.random.seed(1)
+    random_seed=1
+    np.random.seed(random_seed)
     # weights downloaded from https://huggingface.co/EleutherAI/gpt-j-6B/tree/main
     with h5py.File(path, 'r') as f:
         key='/transformer/tfgptj_for_causal_lm/transformer/wte/weight:0'
@@ -62,8 +63,9 @@ if __name__=="__main__":
             t_end=time.time()
             print(f"For batch {i} it took {t_end-t_start:.2f} seconds, or {(t_end-t_start)/batch_size:.2e} seconds per test")
 
+        outfile_prefix="frequency_data/"
         outfile_location="frequencies_random_seed_1.csv"
-        with open(outfile_location, 'w') as f:
+        with open(f"{outfile_prefix}{outfile_location}", 'w') as f:
             out_string="\n".join([f"{key},{cumulative_frequencies[key]}" for key in sorted(list(cumulative_frequencies))])
             f.write(out_string)
         print("done)")
