@@ -4,8 +4,8 @@ import json
 import matplotlib.pyplot as plt
 
 
-def load_data(file_name, labels_location="vocab.json"):
-    with open(file_name, 'r') as frequency_file:
+def load_data(file_name, labels_location="vocab.json", file_prefix="frequency_data/"):
+    with open(f"{file_prefix}{file_name}", 'r') as frequency_file:
         df = pd.read_csv(frequency_file, names=['index', 'frequency'])
         if labels_location:
             with open(labels_location, 'r') as label_file:
