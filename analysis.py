@@ -4,7 +4,7 @@ import json
 import matplotlib.pyplot as plt
 
 
-def load_data(file_name, file_prefix="frequency_data/", token_names_location="vocab.json"):
+def load_data(file_name, file_prefix="frequency_data/", token_names_location="vocab.json", include_weird_flags=False):
     # reads a csv into a dataframe with columns "index", "frequency", and "token"
     # parameters:
     #   - file_name: the name of the file to read
@@ -19,6 +19,9 @@ def load_data(file_name, file_prefix="frequency_data/", token_names_location="vo
                 df = df.loc[df['index'] < max_tokens+1]
                 token_labels = [token_encoding[n] for n in range(max_tokens+1)]
                 df['token'] = token_labels
+        if include_weird_flags:
+            df['weird']=[n in weird_token_indices() for n in df["index"]]
+
         return df
 
 
