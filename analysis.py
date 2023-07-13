@@ -57,7 +57,7 @@ def analyze_number_of_zero_tokens():
     df = load_data(file_name)
     df_of_weird_tokens=df_at_weird_tokens(df)
     df_initial_93=df[df['index']<93]
-    df_random=load_data(random_data_file_name, labels_location=None)
+    df_random=load_data(random_data_file_name, token_names_location=None)
     print(f"Of the whole {len(df)} tokens, {compute_number_of_zero_frequency(df)} ({compute_number_of_zero_frequency(df)/len(df):.1%}) had zero frequency")
     print(f"Of the {len(df_of_weird_tokens)} weird tokens, {compute_number_of_zero_frequency(df_of_weird_tokens)} ({compute_number_of_zero_frequency(df_of_weird_tokens)/len(df_of_weird_tokens):.1%}) had zero frequency")
     print(f"Of the first {len(df_initial_93)} tokens, {compute_number_of_zero_frequency(df_initial_93)} ({compute_number_of_zero_frequency(df_initial_93)/len(df_initial_93):.1%}) had zero frequency")

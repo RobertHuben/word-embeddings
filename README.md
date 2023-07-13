@@ -12,7 +12,7 @@ Package contents:
 
 Generating Frequency Data:
 1. Download the GPT-J parameters. They are in the file 'tf_model.h5' at https://huggingface.co/EleutherAI/gpt-j-6B/tree/main. 
-1. Run the main method of frequency_experiment.py. Optionally, change it's random seed and the outfile name.
+1. Run the main method of frequency_experiment.py. Optionally, change its random seed and the outfile name.
 1. If you wish to generate frequencies from random token embeddings instead of GPT-J's embeddings, use the  weights=np.random.normal line
 
 Analyzing Frequency Data:
